@@ -19,16 +19,18 @@ def uConv(x, Tscr, conv_type: str):
     match conv_type:
         case "deg-C to [x 10 + 200 deg C]":
             # print("Setting reference temperature as x 10 + 200 deg-C")
-            return np.array([(xi - T0)/10 for xi in x])
+            return np.array([np.nan if np.isnan(xi) else (xi - T0)/10  for xi in x ])
         case "g/s to [x 10 g/s]":
             # print("Converting kg/min to g/s")
-            return np.array([xi / 10 for xi in x])
+            return np.array([np.nan if np.isnan(xi) else xi/10 for xi in x])
         case "ppm to [x 10^-3 mol/m^3]":
             # print("converting ppm (mole fraction) to 10^{-3} mol/m^3")
-            return np.array([(xi/(22.4*((273.15+T_scr)/(273.15)))) for (xi, T_scr) in zip(x, Tscr)])
+            return np.array([np.nan if (np.isnan(xi) or np.isnan(T_scr))
+                                        else (xi/(22.4*((273.15+T_scr)/(273.15))))
+                                            for (xi, T_scr) in zip(x, Tscr)])
         case "ml/s to [x 10^-1 ml/s]":
             # print("Scaling urea-injection to 10^{-3} ml/s")
-            return np.array([xi*10 for xi in x])
+            return np.array([np.nan if np.isnan(xi) else xi*10 for xi in x])
         case _: # Default
             raise ValueError("Unknown unit conversion")
 #===

@@ -12,7 +12,11 @@ class RawTruckData():
         self.dt = 1
         self .name = self.truck_name(age, trk)
         self.dat_file = self.data_dire()
-        self.raw = self.load_truck_data()
+        try:
+            self.raw = self.load_pickle()
+        except FileNotFoundError:
+            self.raw = self.load_truck_data()
+            self.pickle_data()
     # ======================================================================
 
     def truck_name(self, age: int, trk: int) -> str:
@@ -55,6 +59,23 @@ class RawTruckData():
         raw['y1'] = uc.uConv(np.array(data['pNOxOutppm']).flatten(),Tscr=Tscr, conv_type="ppm to [x 10^-3 mol/m^3]")
         return raw
     # ====================================================================================================
+
+    def pickle_data(self):
+        # Create a dictionary of the Data
+        # Pickle the data_dict to files
+        pkl_file = pth.Path("./pkl_files/" + self.name + ".pkl")
+        pkl_file.parent.mkdir(parents=True, exist_ok=True)
+        with pkl_file.open("wb") as f:
+            pkl.dump(self.raw, f)
+    # ===============================================================
+
+    def load_pickle(self):
+        # Load the pickled Data
+        pkl_file = pth.Path("./pkl_files/" + self.name + ".pkl")
+        with pkl_file.open("rb") as f:
+            raw = pkl.load(f)
+        return raw
+    # =================================================================
 
 # ======================================================================================================================
 

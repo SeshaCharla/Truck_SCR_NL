@@ -15,7 +15,7 @@ plt.figure()
 ax = plt.gca()
 for i in range(2):
     for j in range(ag_tst[i]):
-        plot_TD(ax, dct[i][j].iod['t'], dct[i][j].iod[key], dct[i][j].iod['t_skips'], label=dct[i][j].name, line_color=tab_lines.__next__())
+        plot_TD(ax, dct[i][j].iod['t'], dct[i][j].iod[key], dct[i][j].iod['t_skips'], label=dct[i][j].name, line_color=tab_lines.__next__(), line_style='--')
 for line in lines:
     plt.plot(dct[i][j].iod['t'], line * np.ones(np.shape(dct[i][j].iod['t'])), 'k--', linewidth=1)
     plt.text(1300, line+0.2, str((line*10)+200) + r'$\, ^0 C$')

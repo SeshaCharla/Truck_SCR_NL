@@ -29,9 +29,10 @@ def rmLowTemprows(x):
     """Remove the rows with temperature less than T0.
         The commercial NOx sensor does not work bellow this temperature.
     """
+    T0 = (175-200)/10     # deg-C
     return np.delete(x,
                      [i for i in range(len(x))
-                         if x[i, 4]<0],
+                         if x[i, 4]<T0],
                      axis=0)
 
 #===============================================================================================
@@ -132,6 +133,7 @@ if __name__ == '__main__':
                 plt.ylabel(key)
                 plt.title(test_data[i][j].name + "_iod")
                 plt.savefig("figs/" + test_data[i][j].name + "_iod_" + key + ".png", dpi=fig_dpi)
+                plt.close()
 
     # Showing datat discontinuities --------------------------------------------
     plt.figure()
@@ -145,7 +147,7 @@ if __name__ == '__main__':
     plt.ylabel('Time [s]')
     plt.title('Time discontinuities in test Data')
     plt.savefig("figs/time_discontinuities_test.png", dpi=fig_dpi)
-    # plt.close()
+    plt.close()
 
-    plt.show()
-    # plt.close('all')
+    # plt.show()
+    plt.close('all')

@@ -57,6 +57,9 @@ class RawTruckData():
         raw['u2'] = uc.uConv(np.array(data['pUreaDosing']).flatten(), Tscr=Tscr, conv_type="ml/s to [x 10^-1 ml/s]")
         raw['u1'] = uc.uConv(np.array(data['pNOxInppm']).flatten(), Tscr=Tscr, conv_type="ppm to [x 10^-3 mol/m^3]")
         raw['y1'] = uc.uConv(np.array(data['pNOxOutppm']).flatten(),Tscr=Tscr, conv_type="ppm to [x 10^-3 mol/m^3]")
+        if self.name == "mes_18":
+            for key in raw.keys():
+                raw[key] = raw[key][248:]
         return raw
     # ====================================================================================================
 

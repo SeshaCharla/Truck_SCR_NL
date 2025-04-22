@@ -29,7 +29,7 @@ def rmLowTemprows(x):
     """Remove the rows with temperature less than T0.
         The commercial NOx sensor does not work bellow this temperature.
     """
-    T0 = (175-200)/10     # deg-C
+    T0 = (200-200)/10     # deg-C
     return np.delete(x,
                      [i for i in range(len(x))
                          if x[i, 4]<T0],

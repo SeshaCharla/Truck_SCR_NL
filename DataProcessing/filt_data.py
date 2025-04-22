@@ -1,7 +1,7 @@
 import numpy as np
-import rdRawDat as rd
-import sosFiltering as sf
-import etaCalc
+from DataProcessing import rdRawDat as rd
+from DataProcessing import sosFiltering as sf
+from DataProcessing import etaCalc
 
 # Array Manipulating functions ------------------------------------------------------
 #==============================================================================================
@@ -29,10 +29,11 @@ def rmLowTemprows(x):
     """Remove the rows with temperature less than T0.
         The commercial NOx sensor does not work bellow this temperature.
     """
-    T0 = (200-200)/10     # deg-C
+    Tmin = (200-200)/10     # deg-C
+    Tmax = (360-200)/10
     return np.delete(x,
                      [i for i in range(len(x))
-                         if x[i, 4]<T0],
+                         if (x[i, 4]<Tmin or x[i, 4]>Tmax)],
                      axis=0)
 
 #===============================================================================================

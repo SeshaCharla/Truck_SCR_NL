@@ -12,6 +12,7 @@ class switch_handle:
         self.intervals = [(T_parts[i], T_parts[i+1]) for i in range(len(T_parts)-1)]
         self.Nparts = len(self.intervals)
         self.part_keys = [str(np.array(self.intervals[i]) * 10 + 200) for i in range(self.Nparts)]
+
     # =============================================================================================
 
     def get_interval_T(self, T: float) -> str:

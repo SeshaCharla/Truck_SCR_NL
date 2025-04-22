@@ -27,14 +27,14 @@ class km_dat():
         # Checking the integrity of eta
         if check_integrity:
             if not self.check_eta_integrity():
-                print('eta[k] = {} \n x1[k] = {} \n u1[m] = {}'.format(self.etak, self.x1k, self.u1m))
-                print("  diff = {}".format(self.etak - (self.u1m - self.x1k)))
+                print('eta[k] = {} \n x1[k] = {} \n u1[m] = {}'.format(self.etak, self.y1k, self.u1m))
+                print("  diff = {}".format(self.etak - (self.u1m - self.y1k)))
                 raise ValueError("Eta integrity check failed!")
 
     # =====================================================
     def check_eta_integrity(self):
         """ checks if eta has the appropriate definition eta[k] = u1[m] - x1[k]"""
-        return math.isclose(np.round(self.etak, 4), np.round((self.u1m - self.x1k), 4), rel_tol= 1e-5)
+        return math.isclose(np.round(self.etak, 4), np.round((self.u1m - self.y1k), 4), rel_tol= 1e-5)
 
     # =============================================================================
 

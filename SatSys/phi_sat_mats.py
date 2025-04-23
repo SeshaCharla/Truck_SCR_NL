@@ -37,8 +37,8 @@ class cAb_mats():
         mat_sizes = dict()
         for key_T in self.swh.part_keys:
             mat_sizes[key_T] = 0
-        for k in range(len(self.t_skips)-1):
-            for l in range(self.t_skips[k], self.t_skips[k+1]-1):
+        for k in range(len(self.t_skips)):
+            for l in range(self.t_skips[k], self.t_skips[k+1] -1):
                 key = self.get_interval_k(l)
                 mat_sizes[key] += 1
         return mat_sizes
@@ -57,10 +57,11 @@ class cAb_mats():
         irc = dict()     # interval row counter
         for key_T in self.swh.part_keys:
             irc[key_T] = 0
-        for k in range(1, self.data_len-1):
-            key_T = self.get_interval_k(k)
-            b_vecs[key_T][irc[key_T]] = self.dat.iod['eta'][k+1]
-            irc[key_T] += 1
+        for k in range(len(self.t_skips)):
+            for l in range(self.t_skips[k]+1, self.t_skips[k+1]):
+                key_T = self.get_interval_k(k)
+                b_vecs[key_T][irc[key_T]] = self.dat.iod['eta'][k+1]
+                irc[key_T] += 1
         return b_vecs
     # ==================================================================================================================
 

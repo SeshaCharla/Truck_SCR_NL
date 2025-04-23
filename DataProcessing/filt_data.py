@@ -32,8 +32,6 @@ def rmLowTemprows(x):
     delta = 1e-5
     Tmin = 0+delta    # 200 deg-C
     Tmax = ((360-200)/10) - delta
-    Tmin = (200-200)/10     # deg-C
-    Tmax = (360-200)/10
     return np.delete(x,
                      [i for i in range(len(x))
                          if (x[i, 4]<Tmin or x[i, 4]>Tmax)],

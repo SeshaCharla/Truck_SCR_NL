@@ -1,5 +1,6 @@
 import numpy as np
 from DataProcessing import filt_data as fd
+from DataProcessing import sosFiltering as sf
 from TemperatureSwitching import switching_handler as sh
 from sat_sim import sat_eta
 import pprint as pp
@@ -27,27 +28,17 @@ dat_set = fd.load_filtered_truck_data_set()
 #     plt.ylabel('Storage Fraction')
 
 C = ['tab:blue', 'tab:green', 'tab:cyan', 'tab:olive']
-for tst in [0, 1, 2]:
+for tst in range(4):
     plt.figure(2*tst)
     plt.figure(2*tst+1)
     for age in range(2):
-        if age == 0:
-            for i in range(0, 4):
-                tst_n = tst+3*i
-                dat = dat_set[age][tst_n]
-                sim = sat_eta(dat, T_parts=sh.T_hl, T_ord=phiT.T_ord)
-                plt.figure(2 * tst)
-                plt.plot(dat.iod['t'],
-                     [(dat.iod['F'][k] / dat.iod['u1'][k]) * sim.eta_sim[k] for k in range(len(dat.iod['t']))],'--', label=dat.name, color=C[i])
-                plt.figure(2 * tst + 1)
-                plt.plot(dat.iod['t'], dat.iod['T'], label="T_" + dat.name)
-        else:
-            dat = dat_set[age][tst]
-            sim = sat_eta(dat, T_parts=sh.T_hl, T_ord=phiT.T_ord)
-            plt.figure(2*tst)
-            plt.plot(dat.iod['t'], [ (dat.iod['F'][k]/dat.iod['u1'][k])*sim.eta_sim[k] for k in range(len(dat.iod['t']))], 'tab:red', label=dat.name)
-            plt.figure(2*tst+1)
-            plt.plot(dat.iod['t'], dat.iod['T'], label="T_"+dat.name)
+        line_color = "tab:red" if age == 1 else "tab:green"
+        dat = dat_set[age][tst]
+        sim = sat_eta(dat, T_parts=sh.T_n, T_ord=phiT.T_ord)
+        plt.figure(2*tst)
+        plt.plot(dat.iod['t'], sf.sosff_TD(dat.iod['t_skips'], [ (dat.iod['F'][k]/dat.iod['u1'][k])*sim.eta_sim[k] for k in range(len(dat.iod['t']))]), line_color, label=dat.name)
+        plt.figure(2*tst+1)
+        plt.plot(dat.iod['t'], dat.iod['T'], label="T_"+dat.name)
 
     plt.figure(2*tst)
     plt.legend()

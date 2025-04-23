@@ -23,7 +23,7 @@ class switch_handle:
 
 
 if __name__ == '__main__':
-    sh = switch_handle(T_hl)
+    sh = switch_handle(T_n)
     Ti = 8.95
     interval_num = sh.get_interval_T(Ti)
     print("Intervals: ", sh.intervals)

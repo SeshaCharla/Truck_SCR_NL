@@ -113,6 +113,7 @@ def load_filtered_truck_data_set():
 
 if __name__ == '__main__':
     from plotting import *
+    import unit_convs as uc
 
     # Actually load the entire Data set ----------------------------------------
     test_data = rd.load_truck_data_set()
@@ -132,7 +133,7 @@ if __name__ == '__main__':
                 plt.grid()
                 plt.legend()
                 plt.xlabel('Time [s]')
-                plt.ylabel(key)
+                plt.ylabel(key + uc.units[key])
                 plt.title(test_data[i][j].name + "_iod")
                 plt.savefig("figs/" + test_data[i][j].name + "_iod_" + key + ".png", dpi=fig_dpi)
                 # plt.close()

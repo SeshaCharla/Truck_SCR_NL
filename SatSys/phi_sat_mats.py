@@ -11,18 +11,19 @@ class cAb_mats():
     """
     def __init__(self, f_dat: fd.FilteredTruckData,  T_parts:list, T_ord:dict) -> None:
         self.dat = f_dat
+        self.t_skips = f_dat.iod['t_skips']
         self.T_ord = T_ord
         self.swh = sh.switch_handle(T_parts)
         self.Nparms = self.T_ord['Gamma'] + 1
         self.T = self.dat.iod['T']
         self.data_len = len(self.T)
         self.row_len = self.get_row_len()
-        self.b_eta_vecs = self.get_b_eta()
-        self.b_u1_vecs = self.get_b_u1()
-        self.A_part_mats = self.get_A_part()
-        self.c_vecs = self.get_c()
-        self.b_vecs = self.b_eta_vecs
-        self.A_mats = self.A_part_mats
+        # self.b_eta_vecs = self.get_b_eta()
+        # self.b_u1_vecs = self.get_b_u1()
+        # self.A_part_mats = self.get_A_part()
+        # self.c_vecs = self.get_c()
+        # self.b_vecs = self.b_eta_vecs
+        # self.A_mats = self.A_part_mats
 
     # ==================================================================================================================
     def get_interval_k(self, k) -> str:
@@ -36,9 +37,10 @@ class cAb_mats():
         mat_sizes = dict()
         for key_T in self.swh.part_keys:
             mat_sizes[key_T] = 0
-        for k in range(1, self.data_len-1):
-            key = self.get_interval_k(k)
-            mat_sizes[key] += 1
+        for k in range(len(self.t_skips)-1):
+            for l in range(self.t_skips[k], self.t_skips[k+1]-1):
+                key = self.get_interval_k(l)
+                mat_sizes[key] += 1
         return mat_sizes
     # ==================================================================================================================
 
@@ -120,6 +122,7 @@ class cAb_mats():
 # Testing
 if __name__ == "__main__":
     import pprint
-    cAb_rmc = cAb_mats(fd.FilteredTruckData(0, 0), T_parts=sh.T_hl, T_ord=phiT.T_ord)
-    pprint.pprint(cAb_rmc.A_mats)
-    pprint.pprint(cAb_rmc.c_vecs)
+    cAb = cAb_mats(fd.FilteredTruckData(0, 0), T_parts=sh.T_hl, T_ord=phiT.T_ord)
+    pprint.pprint(cAb.row_len)
+    pprint.pprint(cAb.data_len)
+    print(len(cAb.t_skips))

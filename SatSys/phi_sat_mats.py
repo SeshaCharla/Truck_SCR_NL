@@ -18,12 +18,9 @@ class cAb_mats():
         self.T = self.dat.iod['T']
         self.data_len = len(self.T)
         self.row_len = self.get_row_len()
-        # self.b_eta_vecs = self.get_b_eta()
-        # self.b_u1_vecs = self.get_b_u1()
-        # self.A_part_mats = self.get_A_part()
-        # self.c_vecs = self.get_c()
-        # self.b_vecs = self.b_eta_vecs
-        # self.A_mats = self.A_part_mats
+        self.b_vecs = self.get_b_eta()
+        self.A_mats = self.get_A_mats()
+        self.c_vecs = self.get_c()
 
     # ==================================================================================================================
     def get_interval_k(self, k) -> str:
@@ -37,9 +34,9 @@ class cAb_mats():
         mat_sizes = dict()
         for key_T in self.swh.part_keys:
             mat_sizes[key_T] = 0
-        for k in range(len(self.t_skips)):
-            for l in range(self.t_skips[k], self.t_skips[k+1] -1):
-                key = self.get_interval_k(l)
+        for l in range(len(self.t_skips)-1):
+            for k in range(self.t_skips[l], self.t_skips[l+1] -1):
+                key = self.get_interval_k(k)
                 mat_sizes[key] += 1
         return mat_sizes
     # ==================================================================================================================
@@ -57,36 +54,15 @@ class cAb_mats():
         irc = dict()     # interval row counter
         for key_T in self.swh.part_keys:
             irc[key_T] = 0
-        for k in range(len(self.t_skips)):
-            for l in range(self.t_skips[k]+1, self.t_skips[k+1]):
+        for l in range(len(self.t_skips) - 1):
+            for k in range(self.t_skips[l], self.t_skips[l+1] - 1):
                 key_T = self.get_interval_k(k)
                 b_vecs[key_T][irc[key_T]] = self.dat.iod['eta'][k+1]
                 irc[key_T] += 1
         return b_vecs
     # ==================================================================================================================
 
-    def get_b_u1(self) -> dict[str, np.ndarray]:
-        """ Returns a dictionary of b vectors for each of the partitions """
-        # Creating the dictionary with zero matrices ============================================
-        b_vecs = dict()
-        for key_T in self.swh.part_keys:
-            if self.row_len[key_T] == 0:
-                b_vecs[key_T] = None
-            else:
-                b_vecs[key_T] = np.zeros(self.row_len[key_T])
-        # ========================================================================================
-        irc = dict()     # interval row counter
-        for key_T in self.swh.part_keys:
-            irc[key_T] = 0
-        for k in range(1, self.data_len-1):
-            key_T = self.get_interval_k(k)
-            b_vecs[key_T][irc[key_T]] = self.dat.iod['u1'][k]
-            irc[key_T] += 1
-        return b_vecs
-
-    # ==================================================================================================================
-
-    def get_A_part(self) -> dict[str, np.ndarray]:
+    def get_A_mats(self) -> dict[str, np.ndarray]:
         """ Returns a dictionary of A matrices for each of the partitions """
         # Creating a dictionary with zero matrices
         A_mats = dict()
@@ -99,13 +75,14 @@ class cAb_mats():
         irc = dict()
         for key_T in self.swh.part_keys:
             irc[key_T] = 0
-        for k in range(1, self.data_len-1):
-            key_T = self.get_interval_k(k)
-            u1_k = self.dat.iod['u1'][k]
-            F_k = self.dat.iod['F'][k]
-            T_k = self.dat.iod['T'][k]
-            A_mats[key_T][irc[key_T], :] = (u1_k/F_k) * (phiT.phi_T(T_k, self.T_ord['Gamma'])).flatten()
-            irc[key_T] += 1
+        for l in range(len(self.t_skips) - 1):
+            for k in range(self.t_skips[l], self.t_skips[l+1] - 1):
+                key_T = self.get_interval_k(k)
+                u1_k = self.dat.iod['u1'][k]
+                F_k = self.dat.iod['F'][k]
+                T_k = self.dat.iod['T'][k]
+                A_mats[key_T][irc[key_T], :] = (u1_k/F_k) * (phiT.phi_T(T_k, self.T_ord['Gamma'])).flatten()
+                irc[key_T] += 1
         return A_mats
     # ==================================================================================================================
 
@@ -113,8 +90,8 @@ class cAb_mats():
         """ Returns the c vectors for the linear programming """
         c_vecs = dict()
         for key in self.swh.part_keys:
-            if self.A_part_mats[key] is not None:
-                c_vecs[key] = np.sum(self.A_part_mats[key], axis=0)
+            if self.A_mats[key] is not None:
+                c_vecs[key] = np.sum(self.A_mats[key], axis=0)
             else:
                 c_vecs[key] = None
         return c_vecs
@@ -124,6 +101,6 @@ class cAb_mats():
 if __name__ == "__main__":
     import pprint
     cAb = cAb_mats(fd.FilteredTruckData(0, 0), T_parts=sh.T_hl, T_ord=phiT.T_ord)
-    pprint.pprint(cAb.row_len)
-    pprint.pprint(cAb.data_len)
-    print(len(cAb.t_skips))
+    pprint.pprint(cAb.b_vecs)
+    pprint.pprint(cAb.c_vecs)
+    pprint.pprint(cAb.A_mats)
